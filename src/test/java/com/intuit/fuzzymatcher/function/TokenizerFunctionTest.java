@@ -117,6 +117,7 @@ public class TokenizerFunctionTest {
                 .createElement();
         Stream<Token> defaultStream = (Stream<Token>) defaultTokenElement.getTokenizerFunction().apply(defaultTokenElement);
         List<Token> defaultResults = defaultStream.collect(Collectors.toList());
+
         Assert.assertEquals(1, defaultResults.size());
         Assert.assertEquals(value, defaultResults.get(0).getValue());
 
@@ -132,6 +133,11 @@ public class TokenizerFunctionTest {
                 .getTokenizerFunction()
                 .apply(customTokenElement);
         List<Token> customResults = customStream.collect(Collectors.toList());
+
+        for (Token token: customResults) {
+            System.out.println(token);
+        }
+
         Assert.assertEquals(3, customResults.size());
         Assert.assertEquals("123", customResults.get(0).getValue());
     }
