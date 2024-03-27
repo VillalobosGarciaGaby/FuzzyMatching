@@ -85,6 +85,15 @@ public class PreProcessFunction<T>{
     }
 
     /**
+     * applies "removeTrailingNumber", "removeSpecialChars" and "phoneNormalization" functions
+     *
+     * @return the function to perform phonePreprocessing
+     */
+    public static Function<String, String> phonePreprocessing() {
+        return (str) -> removeTrailingNumber().andThen(removeSpecialChars()).andThen(phoneNormalization()).apply(str);
+    }
+
+    /**
      * Uses "address-dictionary" to normalize commonly uses string in addresses
      * eg. "st.", "street", "ave", "avenue"
      *
@@ -111,6 +120,10 @@ public class PreProcessFunction<T>{
      */
     public static Function<String, String> nameNormalization() {
         return str -> Utils.getNormalizedString(str, Dictionary.nameDictionary);
+    }
+
+    public static Function<String, String> phoneNormalization() {
+        return str -> Utils.getNormalizedString(str, Dictionary.phoneDictionary);
     }
 
     /**

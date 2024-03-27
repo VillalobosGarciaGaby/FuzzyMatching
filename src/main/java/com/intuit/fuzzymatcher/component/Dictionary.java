@@ -21,7 +21,7 @@ public class Dictionary {
     public static final Map<String, String> addressDictionary = getAddressDictionary();
 
     public static final Map<String, String> nameDictionary = getNameDictionary();
-
+    public static final Map<String, String> phoneDictionary = getPhoneDictionary();
 
     private static Map<String, String>  getAddressDictionary() {
         try {
@@ -45,11 +45,33 @@ public class Dictionary {
         }
     }
 
+    /**
+     * Retrieves the phone dictionary from the classpath resources and returns it as a Map.
+     * The phone dictionary is expected to be in a file named "phone-dictionary.txt".
+     * Each line in the file is expected to contain a pair of key-value separated by ":".
+     *
+     * @return A Map containing phone dictionary entries where keys represent original values
+     *         and values represent normalized values.
+     * @throws MatchException if an error occurs while loading or parsing the phone dictionary.
+     */
+    private static Map<String, String> getPhoneDictionary() {
+        try {
+            ClassLoader classLoader = Dictionary.class.getClassLoader();
+            BufferedReader br = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("phone-dictionary.txt")));
+            return getDictionary(br);
+        } catch (IOException e) {
+            LOGGER.error("could not load phone dictionary", e);
+            throw new MatchException("could not load phone dictionary", e);
+        }
+    }
+
     private static Map<String, String> getDictionary(BufferedReader br) throws IOException {
             return br
                     .lines()
                     .map(String::toLowerCase)
+                    .filter(line -> !line.isEmpty())
                     .map(s -> s.split(":", 2))
+                    .filter(arr -> arr.length == 2)
                     .collect(Collectors.toMap(arr -> arr[0].trim(), arr -> arr[1].trim(), (a1, a2) -> a1));
     }
 }
