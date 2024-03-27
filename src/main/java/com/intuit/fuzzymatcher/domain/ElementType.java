@@ -22,6 +22,7 @@ public enum ElementType {
     PHONE,
     NUMBER,
     DATE,
+    PATH,
     AGE;
 
     protected Function getPreProcessFunction() {
@@ -36,6 +37,8 @@ public enum ElementType {
                 return removeDomain();
             case PHONE:
                 return phonePreprocessing();
+            case PATH:
+                return pathPreprocessing();
             case NUMBER:
             case AGE:
                 return numberPreprocessing();
@@ -49,6 +52,7 @@ public enum ElementType {
             case NAME:
                 return wordSoundexEncodeTokenizer();
             case TEXT:
+            case PATH:
                 return wordTokenizer();
             case ADDRESS:
                 return wordSoundexEncodeTokenizer();

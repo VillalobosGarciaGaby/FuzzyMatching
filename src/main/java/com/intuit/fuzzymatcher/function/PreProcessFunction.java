@@ -150,7 +150,6 @@ public class PreProcessFunction<T>{
             } else {
                 return none().apply(obj);
             }
-
         };
     }
 
@@ -161,5 +160,18 @@ public class PreProcessFunction<T>{
      */
     public static Function none() {
         return obj -> obj;
+    }
+
+    public static Function<String, String> pathPreprocessing(){
+        return (obj) ->  {
+            if (obj instanceof String) {
+                String str = obj.toString();
+                Pattern pattern = Pattern.compile("/");
+                Matcher matcher = pattern.matcher(str);
+                return matcher.find() ? matcher.group() : str;
+            } else {
+                return "";
+            }
+        };
     }
 }
