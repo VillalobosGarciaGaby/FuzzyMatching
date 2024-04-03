@@ -6,6 +6,7 @@ import com.intuit.fuzzymatcher.domain.ElementType;
 import com.intuit.fuzzymatcher.domain.MatchType;
 import com.intuit.fuzzymatcher.domain.Token;
 import com.intuit.fuzzymatcher.exception.MatchException;
+import com.intuit.fuzzymatcher.util.Utils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +45,7 @@ public class TokenRepo {
         MatchType matchType;
 
         Map<Object, Set<Element>> tokenElementSet;
+        Map<Object, Set<Element>> tokenElementSetRabin;
 
         TreeSet<Object> tokenBinaryTree;
 
@@ -54,6 +56,8 @@ public class TokenRepo {
         Repo(MatchType matchType) {
             this.matchType = matchType;
             switch (matchType) {
+                case RABIN_KARP:
+                    tokenElementSetRabin = new ConcurrentHashMap<>();
                 case NEAREST_NEIGHBORS:
                     tokenBinaryTree = new TreeSet<>();
                 case EQUALITY:
@@ -63,6 +67,12 @@ public class TokenRepo {
 
         void put(Token token, Element element) {
             switch (matchType) {
+                case RABIN_KARP:
+                    String[] words = token.getValue().toString().split(" ");
+                    //tokenElementSetRabin.put(token.getValue(), Utils.getRabinKarp(words[0], words[1], 2));
+                    Set<Element> elementsR = tokenElementSetRabin.getOrDefault(token.getElement(), new HashSet<>());
+                    elementsR.add(element);
+                    tokenElementSetRabin.put(token.getValue(), elementsR);
                 case NEAREST_NEIGHBORS:
                     tokenBinaryTree.add(token.getValue());
                 case EQUALITY:
@@ -74,6 +84,8 @@ public class TokenRepo {
 
         Set<Element> get(Token token) {
             switch (matchType) {
+                case RABIN_KARP:
+                    return tokenElementSetRabin.get(token.getValue());
                 case EQUALITY:
                     return tokenElementSet.get(token.getValue());
                 case NEAREST_NEIGHBORS:

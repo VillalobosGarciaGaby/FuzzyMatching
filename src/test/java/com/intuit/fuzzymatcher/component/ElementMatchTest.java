@@ -1,9 +1,6 @@
 package com.intuit.fuzzymatcher.component;
 
-import com.intuit.fuzzymatcher.domain.Document;
-import com.intuit.fuzzymatcher.domain.Element;
-import com.intuit.fuzzymatcher.domain.ElementType;
-import com.intuit.fuzzymatcher.domain.Match;
+import com.intuit.fuzzymatcher.domain.*;
 import org.junit.Assert;
 import org.junit.Test;
 
