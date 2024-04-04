@@ -50,58 +50,6 @@ public class Utils {
                 .collect(Collectors.joining(" "));
     }
 
-    public static void getRabinKarp (String pat, String txt, int q)
-    {
-        int d = 256;
-        int M = pat.length();
-        int N = txt.length();
-        int i, j;
-        int p = 0; // hash value for pattern
-        int t = 0; // hash value for txt
-        int h = 1;
-
-        if (M > N) {
-            return;
-        }
-        for (i = 0; i < M - 1; i++)
-            h = (h * d) % q;
-
-        for (i = 0; i < M - 1; i++) {
-            p = (d * p + pat.charAt(i)) % q;
-            t = (d * t + txt.charAt(i)) % q;
-        }
-
-        for (i = 0; i <= N - M; i++) {
-
-            if (p == t) {
-
-                for (j = 0; j < M; j++) {
-                    if (txt.charAt(i + j) != pat.charAt(j))
-                        break;
-                }
-
-                if (j == M)
-                    System.out.println("Pattern found at index " + i);
-            }
-
-            if (i < N - M) {
-                t = (d * (t - txt.charAt(i) * h) + txt.charAt(i + M)) % q;
-                if (t < 0)
-                    t = (t + q);
-            }
-        }
-    }
-
-    public static int calculateHash(String elementValue) {
-        final int BASE = 31;
-        final int MOD = 17;
-
-        int hashValue = 0;
-        for (int i = 0; i < elementValue.length(); i++) {
-            hashValue = (hashValue * BASE + elementValue.charAt(i)) % MOD;
-        }
-        return hashValue;
-    }
     public static boolean isNumeric(String str) {
         return str.matches(".*\\d.*");
     }

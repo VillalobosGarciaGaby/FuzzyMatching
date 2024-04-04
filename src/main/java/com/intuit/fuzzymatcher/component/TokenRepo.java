@@ -2,11 +2,10 @@ package com.intuit.fuzzymatcher.component;
 
 import com.intuit.fuzzymatcher.domain.Element;
 import com.intuit.fuzzymatcher.domain.ElementClassification;
-import com.intuit.fuzzymatcher.domain.ElementType;
 import com.intuit.fuzzymatcher.domain.MatchType;
 import com.intuit.fuzzymatcher.domain.Token;
 import com.intuit.fuzzymatcher.exception.MatchException;
-import com.intuit.fuzzymatcher.util.Utils;
+import com.intuit.fuzzymatcher.util.RabinKarp;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +44,7 @@ public class TokenRepo {
         MatchType matchType;
 
         Map<Object, Set<Element>> tokenElementSet;
-        Map<Integer, Set<Element>> hashElementSet;
+        Map<Object, Set<Element>> tokenRabinElementSet;
 
         TreeSet<Object> tokenBinaryTree;
 
@@ -57,7 +56,7 @@ public class TokenRepo {
             this.matchType = matchType;
             switch (matchType) {
                 case RABIN_KARP:
-                    hashElementSet = new ConcurrentHashMap<>();
+                    tokenRabinElementSet = new ConcurrentHashMap<>();
                 case NEAREST_NEIGHBORS:
                     tokenBinaryTree = new TreeSet<>();
                 case EQUALITY:
@@ -68,10 +67,13 @@ public class TokenRepo {
         void put(Token token, Element element) {
             switch (matchType) {
                 case RABIN_KARP:
-                    int hash = Utils.calculateHash(token.getValue().toString());
-                    Set<Element> elementsR = hashElementSet.getOrDefault(hash, new HashSet<>());
+                    int hash = RabinKarp.calculateHash(token.getValue().toString(), 101);
+                    Set<Element> elementsR = tokenRabinElementSet.getOrDefault(token.getValue(), new HashSet<>());
+                    elementsR.stream().map(elementR -> {
+                        return RabinKarp.getRabinKarp(token.getValue().toString(), elementR.);
+                    });
                     elementsR.add(element);
-                    hashElementSet.put(hash, elementsR);
+                    tokenRabinElementSet.put(hash, elementsR);
                 case NEAREST_NEIGHBORS:
                     tokenBinaryTree.add(token.getValue());
                 case EQUALITY:
@@ -84,8 +86,7 @@ public class TokenRepo {
         Set<Element> get(Token token) {
             switch (matchType) {
                 case RABIN_KARP:
-                    int hash = Utils.calculateHash(token.getValue().toString());
-                    return hashElementSet.get(hash);
+                    return tokenRabinElementSet.get(token.getValue());
                 case EQUALITY:
                     return tokenElementSet.get(token.getValue());
                 case NEAREST_NEIGHBORS:
