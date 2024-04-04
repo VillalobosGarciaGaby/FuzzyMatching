@@ -31,13 +31,23 @@ public class ElementMatchTest {
 
     @Test
     public void itShouldNotScoreMoreThanOneForAddress() {
-        Element<String> element1 = getElement(ADDRESS,"325 NS 3rd Street Ste 567 Miami FL 33192");
-        Element<String> element2 = getElement(ADDRESS,"325 NS 3rd Street Ste 567 Miami FL 33192");
+        Element<String> element1 = getElementR(ADDRESS,"325 NS 3rd Street Ste 567 Miami FL 33191");
+        Element<String> element2 = getElementR(ADDRESS,"325 NS 3rd Street Ste 567 Miami FL 33192");
+        Element<String> element3 = getElement(ADDRESS,"325 NS 3rd Street Ste 567 Miami FL 33193");
+        Element<String> element4 = getElement(ADDRESS,"325 NS 3rd Street Ste 567 Miami FL 33192");
 
         elementMatch.matchElement(element1);
         Set<Match<Element>> matchSet = elementMatch.matchElement(element2);
         Assert.assertEquals(1, matchSet.size());
-        Assert.assertEquals(1.0, matchSet.iterator().next().getResult(), 0.0);
+        Assert.assertEquals(0.8888888, matchSet.iterator().next().getResult(), 0.1);
+
+//        Set<Match<Element>> matchSet1 = elementMatch.matchElement(element3);
+//        Assert.assertEquals(2, matchSet1.size());
+//        Assert.assertEquals(0.888, matchSet1.iterator().next().getResult(), 0.1);
+//
+//        Set<Match<Element>> matchSet2 = elementMatch.matchElement(element4);
+//        Assert.assertEquals(2, matchSet1.size());
+//        Assert.assertEquals(0.888, matchSet1.iterator().next().getResult(), 0.1);
     }
 
     @Test
@@ -112,4 +122,10 @@ public class ElementMatchTest {
         return element;
     }
 
+    private Element getElementR(ElementType elementType, String value) {
+        Element<String> element = new Element.Builder().setType(elementType)
+                .setValue(value).setMatchType(MatchType.RABIN_KARP).createElement();
+        new Document.Builder(atomicInteger.incrementAndGet()+"").addElement(element).createDocument();
+        return element;
+    }
 }

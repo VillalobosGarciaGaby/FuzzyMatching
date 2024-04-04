@@ -45,7 +45,7 @@ public class TokenRepo {
         MatchType matchType;
 
         Map<Object, Set<Element>> tokenElementSet;
-        Map<Object, Set<Element>> tokenElementSetRabin;
+        Map<Integer, Set<Element>> hashElementSet;
 
         TreeSet<Object> tokenBinaryTree;
 
@@ -57,7 +57,7 @@ public class TokenRepo {
             this.matchType = matchType;
             switch (matchType) {
                 case RABIN_KARP:
-                    tokenElementSetRabin = new ConcurrentHashMap<>();
+                    hashElementSet = new ConcurrentHashMap<>();
                 case NEAREST_NEIGHBORS:
                     tokenBinaryTree = new TreeSet<>();
                 case EQUALITY:
@@ -68,11 +68,10 @@ public class TokenRepo {
         void put(Token token, Element element) {
             switch (matchType) {
                 case RABIN_KARP:
-                    String[] words = token.getValue().toString().split(" ");
-                    //tokenElementSetRabin.put(token.getValue(), Utils.getRabinKarp(words[0], words[1], 2));
-                    Set<Element> elementsR = tokenElementSetRabin.getOrDefault(token.getElement(), new HashSet<>());
+                    int hash = Utils.calculateHash(token.getValue().toString());
+                    Set<Element> elementsR = hashElementSet.getOrDefault(hash, new HashSet<>());
                     elementsR.add(element);
-                    tokenElementSetRabin.put(token.getValue(), elementsR);
+                    hashElementSet.put(hash, elementsR);
                 case NEAREST_NEIGHBORS:
                     tokenBinaryTree.add(token.getValue());
                 case EQUALITY:
@@ -85,7 +84,8 @@ public class TokenRepo {
         Set<Element> get(Token token) {
             switch (matchType) {
                 case RABIN_KARP:
-                    return tokenElementSetRabin.get(token.getValue());
+                    int hash = Utils.calculateHash(token.getValue().toString());
+                    return hashElementSet.get(hash);
                 case EQUALITY:
                     return tokenElementSet.get(token.getValue());
                 case NEAREST_NEIGHBORS:
